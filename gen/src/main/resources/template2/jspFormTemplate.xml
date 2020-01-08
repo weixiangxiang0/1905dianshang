@@ -1,0 +1,47 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>${moduleName}管理</title>
+<link href="<%=request.getContextPath()%>/res/sys/css/default.css" rel="stylesheet" type="text/css"/>
+</head>
+
+<body>
+<div class="blk c">
+	<h2>编辑${moduleName}</h2>
+	<div class="c">
+    	<form id="${lowerName}Form" method="post">
+		
+		<input type="hidden" id="${columnDataPk.fieldName}" name="${columnDataPk.fieldName}" value="${r"${"} ${lowerName}.${columnDataPk.fieldName} ${r"}"}" />
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="pmsTable">
+	        <tr>
+		   <#list columnDatas as columnData>
+				<td class="ftit">${columnData.columnComment}:</td>
+				<td><input  id="${columnData.fieldName}"  name="${columnData.fieldName}"  value="${r"${"} ${lowerName}.${columnData.fieldName} ${r"}"}" type="text"  ></td>
+			<#if ((columnData_index+1 )%2 ==0) >
+			</tr>
+			<tr>
+			<#elseif  columnData_has_next>
+			
+			<#else>
+				</tr>
+			</#if>
+			</#list>
+			<!-- 
+			<span>*</span>
+			class="easyui-validatebox" data-options="required:true"
+			<tr>
+              <td colspan="2" class="fctrl">
+                <input type="submit" value="提交" id="Button1" class="l-button" /> 
+                <input type="button" value="取消" class="l-button" onclick="JP.f_cancel()"/>      
+              </td>
+            </tr>
+			-->
+            
+        </table>
+        </form>
+	</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,119 @@
+package ${bussPackage}.service;
+
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import ${bussPackage}.entity.${className};
+import ${bussPackage}.dao.${className}Dao;
+//import com.github.pagehelper.PageHelper;
+//import com.github.pagehelper.PageInfo;
+import com.yzit.common.core.text.Convert;
+
+/**
+ * 
+ * <br>
+ * <b>功能：</b>${moduleName}--服务实现类<br>
+ * <b>作者：</b>${user}<br>
+ * <b>日期：</b> ${time?string("yyyy-MM-dd")} <br>
+ * <b>版权所有： 2018，${organization}<br>
+ */ 
+@Service("${lowerName}Service")
+public class ${className}ServiceImpl   implements ${className}Service {
+	//private final static Logger log= Logger.getLogger(${className}Service.class);
+	
+	@Autowired
+	private ${className}Dao  ${lowerName}Dao;
+
+	/**
+	 * 保持对象
+	 * 
+	 * @param ${lowerName}
+	 */
+	public int save(${className}  ${lowerName}){
+		return	${lowerName}Dao.save(${lowerName});
+	}
+
+	/**
+	 * 根据id删除对象
+	 * 
+	 * @param id
+	 */
+	public int delById(Long id){
+		return ${lowerName}Dao.delById(id);
+	}
+
+	/**
+	 * 修改对象
+	 * 
+	 * @param ${lowerName}
+	 */
+	public int update(${className}  ${lowerName}){
+		return ${lowerName}Dao.update(${lowerName});
+	}
+
+	/**
+	 * 检索所有的对象
+	 * 
+	 * @return
+	 */
+	public List<${className}> findAll(){
+		return ${lowerName}Dao.findAll();
+	}
+
+	/**
+	 * 根据条件检索对象
+	 * 
+	 * @param ${lowerName}
+	 * @return
+	 */
+	public List<${className}> findByList(${className}  ${lowerName}){
+		return ${lowerName}Dao.findByList(${lowerName});
+	}
+
+	/**
+	 * 根据id检索对象
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public ${className}  findById(Long id){
+			return ${lowerName}Dao.findById(id);
+	}
+
+	/**
+	 * 检索总记录数
+	 * 
+	 * @param ${lowerName}
+	 * @return
+	 */
+	public Long findByCount(${className}  ${lowerName}){
+		return ${lowerName}Dao.findByCount(${lowerName});
+	}
+	
+	/**
+     * 批量删除信息
+     * 
+     * @param ids 需要删除的ID集合
+     * @return 结果
+     */
+    public int delByIds(String ids) {
+        Long[] idList = Convert.toLongArray(ids);
+        int flag  =  0 ;
+        for (Long id : idList) {
+           this.delById(id);
+           flag ++ ;
+        }
+        return flag;
+    }
+		
+	/**
+		
+	public PageInfo<${className}> findByPage(${className} ${lowerName}) {
+		List<${className}> ${lowerName}List= ${lowerName}Dao.findByList(${lowerName});
+		//mybatis分页插件
+		PageHelper.startPage(${lowerName}.getPageNo(), ${lowerName}.getPageSize());
+		PageInfo<${className}> pageInfo = new PageInfo<${className}>(${lowerName}List);
+        return pageInfo;
+	}
+	*/
+}

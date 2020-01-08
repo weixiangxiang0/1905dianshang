@@ -1,0 +1,98 @@
+package ${bussPackage}.controller;
+
+import java.util.List;
+import com.yzit.common.annotation.Log;
+import com.yzit.common.enums.BusinessType;
+import com.yzit.common.domain.PageDomain;
+import com.yzit.common.domain.TableDataInfo;
+import com.yzit.common.domain.TableSupport;
+import com.yzit.common.domain.AjaxResult;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.yzit.framework.web.base.BaseController;
+
+import ${bussPackage}.entity.${className};
+import ${bussPackage}.service.${className}Service;
+
+/**
+ * 
+ * <br>
+ * <b>功能：</b>${moduleName}--控制类<br>
+ * <b>作者：</b>${user}<br>
+ * <b>日期：</b> ${time?string("yyyy-MM-dd")} <br>
+ * <b>版权所有： 2019，${organization}<br>
+ */ 
+@RestController
+@RequestMapping("/system/${lowerName}")
+public class ${className}Controller extends BaseController {
+	@Autowired
+	private ${className}Service ${lowerName}Service;
+
+	//@RequiresPermissions("system: ${lowerName}:list")
+	@GetMapping("/list")
+	public TableDataInfo list(${className}  ${lowerName}) {
+		startPage();
+		List<${className}> list = ${lowerName}Service.findByList( ${lowerName});
+		return getDataTable(list);
+	}
+
+	/*@Log(title = "${moduleName}管理", businessType = BusinessType.EXPORT)
+	@RequiresPermissions("system: ${lowerName}:export")
+	@GetMapping("/export")
+	public AjaxResult export(${className}  ${lowerName}) {
+		List<${className}> list = ${lowerName}Service.findByList( ${lowerName});
+		ExcelUtil<${className}> util = new ExcelUtil<${className}>(Role.class);
+		return util.exportExcel(list, "${moduleName}数据");
+	}*/
+
+	/**
+	 * 根据${moduleName}编号获取详细信息
+	 */
+	//@RequiresPermissions("system: ${lowerName}:query")
+	@GetMapping(value = "/{${lowerName}Id}")
+	public AjaxResult getInfo(@PathVariable Long  ${lowerName}Id) {
+		return AjaxResult.success(${lowerName}Service.findById( ${lowerName}Id));
+	}
+
+	/**
+	 * 新增${moduleName}
+	 */
+	//@RequiresPermissions("system: ${lowerName}:add")
+	@Log(title = "${moduleName}管理", businessType = BusinessType.INSERT)
+	@PostMapping
+	public AjaxResult add(@Validated @RequestBody ${className}  ${lowerName}) {
+		return toAjax(${lowerName}Service.save( ${lowerName}));
+
+	}
+
+	/**
+	 * 修改保存${moduleName}
+	 */
+	//@RequiresPermissions("system: ${lowerName}:edit")
+	@Log(title = "${moduleName}管理", businessType = BusinessType.UPDATE)
+	@PutMapping
+	public AjaxResult edit(@Validated @RequestBody ${className}  ${lowerName}) {
+		return toAjax(${lowerName}Service.update( ${lowerName}));
+	}
+	
+	
+	/**
+	 * 删除${moduleName}
+	 */
+	//@RequiresPermissions("system: ${lowerName}:remove")
+	@Log(title = "${moduleName}管理", businessType = BusinessType.DELETE)
+	@DeleteMapping("/{ids}")
+	public AjaxResult remove(@PathVariable String ids) {
+		return toAjax(${lowerName}Service.delByIds(ids));
+	}
+}

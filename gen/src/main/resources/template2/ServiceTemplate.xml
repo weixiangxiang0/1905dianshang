@@ -1,0 +1,79 @@
+package ${bussPackage}.service;
+import java.util.List;
+import ${bussPackage}.entity.${className};
+//import com.github.pagehelper.PageInfo;
+/**
+ * 
+ * <br>
+ * <b>功能：</b>${moduleName}--服务实现类<br>
+ * <b>作者：</b>${user}<br>
+ * <b>日期：</b> ${time?string("yyyy-MM-dd")} <br>
+ * <b>版权所有： 2019，${organization}<br>
+ */ 
+public interface ${className}Service {
+	/**
+	 * 保持对象
+	 * 
+	 * @param ${lowerName}
+	 */
+	public int save(${className}  ${lowerName});
+
+	/**
+	 * 根据id删除对象
+	 * 
+	 * @param id
+	 */
+	public int delById(Long id);
+
+	/**
+	 * 修改对象
+	 * 
+	 * @param ${lowerName}
+	 */
+	public int  update(${className}  ${lowerName});
+
+	/**
+	 * 检索所有的对象
+	 * 
+	 * @return
+	 */
+	public List<${className}> findAll();
+
+	/**
+	 * 根据条件检索对象
+	 * 
+	 * @param ${lowerName}
+	 * @return
+	 */
+	public List<${className}> findByList(${className}  ${lowerName});
+
+	/**
+	 * 根据id检索对象
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public ${className}  findById(Long id);
+
+	/**
+	 * 检索总记录数
+	 * 
+	 * @param ${lowerName}
+	 * @return
+	 */
+	public Long findByCount(${className}  ${lowerName});
+	
+	/**
+     * 批量删除信息
+     * 
+     * @param ids 需要删除的ID集合
+     * @return 结果
+     */
+    public int delByIds(String ids) ;
+	/**
+	 * 分页检索数据
+	 * @param admDept
+	 * @return
+	 */
+	//public PageInfo<${className}> findByPage(${className}  ${lowerName});
+}

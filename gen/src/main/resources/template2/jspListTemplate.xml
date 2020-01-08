@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!--  rel="stylesheet" : 属性必须有,规定文件类型 -->
+    <link rel="stylesheet" href="../../static/elementUI/index.css">
+</head>
+<body>
+    <div id="app">
+        <!--
+        <!--
+        <!--
+            属性绑定: 将数据模型中的属性绑定都标签的属性中
+                :属性名 = "数据模型属性"
+        -->
+        <el-card class="box-card">
+            <div slot="header">
+                游戏名称: <el-input v-model="form.pname" size="mini" style="width:150px" placeholder="请输入内容"></el-input>
+                
+                <el-button type="primary"
+                           @click="find"
+                           size="mini" icon="el-icon-search">查询</el-button>
+                <el-button type="danger"
+                           @click="clear"
+                           size="mini" icon="el-icon-close">清空</el-button>
+                <el-button type="info"
+                           @click="dialogVisible = true"
+                           size="mini" icon="el-icon-edit">添加</el-button>
+                <el-button type="warning"
+                           @click="dels"
+                           size="mini" icon="el-icon-delete">删除</el-button>
+            </div>
+            <el-table
+                    :data="tableInfo.list"
+                    border
+                    stripe
+                    height="480"
+                    @selection-change="handleSelectionChange"
+                    style="width: 100%">
+                <el-table-column
+                        prop="id"
+                        type="selection"
+                        label="编号">
+                </el-table-column>
+                <#list columnDatas as columnData>
+                <el-table-column
+                        prop="${columnData.fieldName}"
+                        width="150"
+                        label="${columnData.columnComment}">
+                </el-table-column>
+                
+                </#list>
+                <el-table-column
+                        fixed="right"
+                        label="操作">
+                    <!-- slot-scope = "变量名称" ,
+                    接收到当前行信息 (row , 当前行的值, column : 当前列值, $index 行索引) -->
+                    <!-- slot-scope 只能加在template标签中 -->
+                    <template slot-scope="info">
+                        <el-button type="primary"
+                                   @click="edit(info)"
+                                   size="small">修改</el-button>
+                        <el-button type="danger"
+                                   @click="del(info)"
+                                   size="small">删除</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </el-card>
+        <el-card class="box-card" align="center">
+            <el-pagination
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page="form.page"
+                    :page-sizes="[1, 2, 5, 10]"
+                    :page-size="form.pageSize"
+                    background
+                    layout="total, sizes, prev, pager, next, jumper"
+                    :total="tableInfo.total">
+            </el-pagination>
+        </el-card>
+        <!--
+            before-close : 关闭dialog之前执行, 默认传递一个done函数,执行这个函数就关闭dialog
+        -->
+        <el-dialog
+                title="提示"
+                :before-close="handleClose"
+                :visible.sync="dialogVisible"
+                width="40%">
+            <!-- 给form表单添加一个名字 ref="名称" -->
+            <el-form label-position="right"
+                     :rules="rules"
+                     ref="addForm"
+                     label-width="80px" size="small" :model="form">
+                <input type="hidden" v-model="form.id">
+                
+                 <#list columnDatas as columnData>
+                <el-form-item label="${columnData.columnComment}" prop="${columnData.fieldName}">
+                    <el-input v-model="form.${columnData.fieldName}"></el-input>
+                </el-form-item>
+                </#list>
+                
+                
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+            <el-button @click="dialogVisible = false">取 消</el-button>
+            <el-button type="primary" @click="save('addForm')">确 定</el-button>
+        </span>
+        </el-dialog>
+    </div>
+
+    <!--
+        表单验证:
+         [1] 在数据模型中定义 rules 对象,来定义规则
+         [2] 绑定校验对象 , 在 <el-form :rules="rules">
+         [3] 绑定校验字段: 在 <el-form-item prop="检验字段名称">
+         [4] 给form表单添加名字 :<el-form ref="表单名称">
+         [5] 当前点击确定时,将表单名称传递给方法: <el-button @click="submitData('表单名称')">
+         [6] 在方法中判断是否允许提交
+            this.$refs[formName].validate(function (valid) { // valid : 验证结果
+                if(valid) {
+                    // 允许提交
+                }
+            });
+    -->
+
+    <!--
+        绝对路径: 从根开始找
+        相对路径: 目标文件相对于当前文件所在目录(参照物)的路径
+        找 vue.min.js , 相对于当前文件(04-crud.html)所在目录(crud) 路径
+        跟window操作来确定:
+            1. 返回上一级目录,进入src : ../
+            2. 返回上一级目录,进入 11-vue-elementUI : ../
+            3. 进入static目录 static
+            4. 进入vue目录 vue
+            ../../static/vue/vue.min.js
+    -->
+    <script src="../../static/vue/vue.min.js"></script>
+    <script src="../../static/vue/axios.min.js"></script>
+    <script src="../../static/vue/qs.js"></script>
+    <script src="../../static/elementUI/index.js"></script>
+    <script>
+        var baseUrl = "http://localhost:81";
+
+        axios.interceptors.response.use(function(response) {
+            return response;
+        },function (error) {
+            vue.$message({
+                message: '系统错误',
+                type: 'error'
+            });
+        });
+
+        var vue = new Vue({
+            el:"#app",
+            data:{
+                dialogVisible:false,
+                tableInfo:{},
+                rules:{
+                    // 字段名称必须和请求参数名称相同
+                    // 字段名称:[{校验规则对象},{校验规则对象}]
+                    // required : 必填项
+                    // message : 提示信息
+                    // trigger : 触发方式 , blur : 失去焦点 change : 内容改变
+                    panme:[
+                        { required:true, message: '请输入游戏名称', trigger: 'blur' },
+                        { min: 5, max: 15, message: '长度在 5 到 15 个字符', trigger: 'blur' }
+                    ]
+                },
+                form:{
+                    page:1,
+                    pageSize:2
+                },
+                agents:[],
+                types:[],
+                selections:[]
+            },
+            // 在页面初始化完成的时候调用
+            created:function () {
+                this.find();
+                this.load();
+            },
+            methods:{
+                // 关闭dialog之前执行
+                handleClose:function (done) {
+                    this.$confirm("确认关闭吗?","提示")
+                        .then(function() { // 点击确定执行
+                            // 恢复form
+                            vue.form = {
+                                page:1,
+                                pageSize:2
+                            };
+                            done(); // 关闭dialog
+                        })
+                },
+                // 修改
+                edit:function (info) {
+                  this.form = info.row;
+                  this.dialogVisible = true;
+                },
+                del:function (info) {
+                    this.$confirm("确认删除吗?","提示")
+                        .then(function() {
+                            axios.delete(baseUrl + "/${lowerName}/" + info.row.id)
+                                .then(function (response) {
+                                    vue.$message.success("删除成功");
+                                    // 刷新list
+                                    vue.find();
+                                })
+                        })
+                },
+                // 批量删除
+                dels:function () {
+                    this.$confirm("确认删除吗?","提示")
+                        .then(function() {
+                            // 提取id数据
+                            var arr = [];
+                            for (var i = 0; i < vue.selections.length; i++) {
+                                var obj = vue.selections[i];
+                                arr.push(obj.id);
+                            }
+                            axios.delete(baseUrl + "/${lowerName}/" +arr.join())
+                                .then(function (response) {
+                                    vue.$message.success("删除成功");
+                                    // 刷新list
+                                    vue.find();
+                                })
+                        })
+
+                },
+                // 获取选中的行
+                handleSelectionChange:function (val) {
+                  this.selections = val;
+                },
+                // 保存数据
+                save:function (formName) {
+                    this.$refs[formName].validate(function (valid) { // valid : 验证结果
+                        if(valid) {
+                        
+                            axios.post(baseUrl + "/${lowerName}",Qs.stringify(vue.form))
+                                .then(function (response) {
+                                    vue.$message({
+                                        message: '操作成功',
+                                        type: 'success'
+                                    });
+                                    // 关闭dialog
+                                    vue.dialogVisible = false;
+                                    // 清空form
+                                    vue.form={
+                                        page:1,
+                                        pageSize:2
+                                    }
+                                    // 刷新table
+                                    vue.find();
+                                });
+                        }
+                    });
+
+                },
+                // 清空查询数据
+                clear:function () {
+                    this.form.pname = null;
+                    this.form.agentId = null;
+                    this.form.typeId = null;
+                },
+                load:function () {
+                    // 接收2个数据
+                   // axios.post(baseUrl + "/player/load")
+                       // .then(function (response) {
+                       //     vue.agents = response.data.agents;
+                       //     vue.types = response.data.types;
+                       // });
+                },
+                handleSizeChange:function (val) {
+                    this.form.pageSize = val;
+                    this.find();
+                },
+                handleCurrentChange:function (val) {
+                    this.form.page = val;
+                    this.find();
+                },
+                find:function () {
+                    axios.post(baseUrl + "/${lowerName}/list",Qs.stringify(this.form))
+                        .then(function (response) {
+                            // this : window 对象
+                            vue.tableInfo = response.data;
+                        });
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>

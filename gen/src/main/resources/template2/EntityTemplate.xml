@@ -1,0 +1,27 @@
+package ${bussPackage}.entity;
+import com.yzit.common.domain.BaseEntity;
+
+/**
+ * 
+ * <br>
+ * <b>功能：</b>${moduleName}实体类<br>
+ * <b>作者：</b>${user}<br>
+ * <b>日期：</b> ${time?string("yyyy-MM-dd")} <br>
+ * <b>版权所有： 2017，${organization}<br>
+ */ 
+public class ${className} extends BaseEntity {
+   private static final long serialVersionUID = 1L;
+    <#list columnDatas as columnData>
+    private ${columnData.dataType}  ${columnData.fieldName};//${columnData.columnComment}
+    </#list>
+    
+    <#list columnDatas as columnData>
+   	public ${columnData.dataType} get${columnData.fieldName?cap_first}() {
+		return ${columnData.fieldName};
+	}
+	public void set${columnData.fieldName?cap_first}(${columnData.dataType}  ${columnData.fieldName}) {
+		this.${columnData.fieldName} = ${columnData.fieldName};
+	}
+	
+   </#list>
+}

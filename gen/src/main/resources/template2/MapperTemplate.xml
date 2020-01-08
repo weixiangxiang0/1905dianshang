@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${bussPackage}.dao.${className}Dao" > 
+<!-- Result Map-->
+<resultMap id="BaseResultMap" type="${bussPackage}.entity.${className}" >
+  <#list columnDatas as columnData>
+    	<result column="${columnData.columnName}" property="${columnData.fieldName}"/>
+  </#list>
+</resultMap>
+<!-- $!{tableName} table all fields -->
+<sql id="Base_Column_List" >
+	 ${columns}
+</sql>
+   
+   
+<!-- 查询条件 -->
+<sql id="Example_Where_Clause">
+where 1=1
+<trim  suffixOverrides="," >
+ <#list columnDatas as columnData>
+ 	<#if (columnData.dataType == 'String')>
+	<if test="${columnData.fieldName} != null and ${columnData.fieldName} != ''" >
+	<#else>
+	<if test="${columnData.fieldName} != null" >
+	</#if>
+	    and ${columnData.columnName} = ${r"#{"}${columnData.fieldName}${r"}"}
+	</if>
+  </#list>
+</trim>
+</sql>
+   
+
+<!-- 插入记录 -->
+<insert id="save" parameterType="${bussPackage}.entity.${className}" >
+  ${insertSql}
+</insert>
+
+<!-- 根据id，修改记录-->  
+ <update id="update" parameterType="${bussPackage}.entity.${className}" >
+  ${updateSql}
+ </update>
+ 
+ <!-- 修改记录，只修改只不为空的字段 -->
+<update id="updateBySelective" parameterType="${bussPackage}.entity.${className}" >
+	${updateSelective}
+	
+	
+	
+</update>
+
+<!-- 删除记录 -->
+<delete id="delById" parameterType="java.lang.Long">
+	delete from ${tableName} where  ${columnDataPk.columnName} =${"#{"}${columnDataPk.fieldName}${"}"}
+</delete>
+ 
+<!-- 根据id查询 ${moduleName} -->
+<select id="findById"  resultMap="BaseResultMap" parameterType="java.lang.Long">
+	select <include refid="Base_Column_List"/>
+	from ${tableName}  where  ${columnDataPk.columnName} = ${"#{"}${columnDataPk.fieldName}${"}"}
+</select>
+
+<!-- 检索所有的记录 -->
+<select id="findAll"  resultMap="BaseResultMap" >
+	select 
+	<include refid="Base_Column_List"/>
+	from ${tableName} 
+</select>
+
+<!-- ${moduleName} 列表总数-->
+<select id="findByCount" resultType="java.lang.Long"  parameterType="${bussPackage}.entity.${className}">
+	select count(1) from ${tableName} 
+	<include refid="Example_Where_Clause"/>
+</select>
+  	
+<!-- 查询${moduleName}列表 -->
+<select id="findByList" resultMap="BaseResultMap"  parameterType="${bussPackage}.entity.${className}">
+	select 
+	<include refid="Base_Column_List"/>
+	from ${tableName} 
+	<include refid="Example_Where_Clause"/>
+	<!--  limit  ${r"#{startIndex}"} ,${r"#{pageSize}"} -->
+</select>
+  	
+</mapper>   
