@@ -24,7 +24,7 @@
 
         <fastjson.version>1.2.61</fastjson.version><!-- fastjosn依赖包 -->
 
-        <ant.version>1.9.7</ant.version>
+        <ant.version>1.10.9</ant.version>
         <jmimemagic.version>0.1.5</jmimemagic.version>
     </properties>
 
