@@ -16,7 +16,7 @@
 
         <fst.version>2.57</fst.version><!-- 高能能序列化 -->
         <!-- common version setting -->
-        <commons-io.version>2.6</commons-io.version>
+        <commons-io.version>2.7</commons-io.version>
         <commons-fileupload.version>1.3.3</commons-fileupload.version>
         <commons-beanutils.version>1.9.3</commons-beanutils.version>
         <commons-text.version>1.3</commons-text.version>
